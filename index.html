@@ -1,95 +1,210 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Мой облачный проект</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
 
-<style>
-body {
-  font-family: sans-serif;
-  display: flex;
-  justify-content: center;
-  padding: 50px;
-  background-color: #f4f4f9;
-}
-.form-container {
-  background: white;
-  padding: 25px;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  width: 300px;
-}
-input {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box;
-}
-button {
-  width: 100%;
-  padding: 10px;
-  background: #f4b400;
-  border: none;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 5px;
-}
-button:hover {
-  background: #dfa400;
-}
-</style>
+        .header-profile {
+            background: white;
+            width: 100%;
+            max-width: 450px;
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        .my-avatar {
+            width: 45px; height: 45px; border-radius: 50%;
+            background: #7cb342; color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; margin-right: 12px; font-size: 20px;
+        }
+        .my-info b { display: block; font-size: 15px; margin-bottom: 2px; }
+        .logout { color: #d32f2f; font-size: 12px; cursor: pointer; border: none; background: none; padding: 0; font-weight: bold; }
 
+        .chat-card {
+            background: white;
+            width: 100%;
+            max-width: 450px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            min-height: 550px;
+            overflow: hidden;
+        }
+
+        .contacts-box { padding: 15px; border-bottom: 1px solid #f0f0f0; }
+        .contacts-label { font-size: 13px; color: #666; margin-bottom: 12px; }
+        .contacts-list { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 5px; }
+        .user-item { text-align: center; cursor: pointer; min-width: 55px; }
+        .user-avatar { 
+            width: 45px; height: 45px; border-radius: 50%; background: #00acc1; 
+            color: white; display: flex; align-items: center; justify-content: center; 
+            margin: 0 auto 6px; font-size: 18px;
+        }
+        .user-item span { font-size: 11px; color: #333; }
+
+        .chat-header { padding: 12px 15px; font-weight: bold; font-size: 14px; border-bottom: 1px solid #f0f0f0; background: #fff; }
+        .messages-area {
+            flex: 1; height: 350px; overflow-y: auto; padding: 15px;
+            background: #ffffff; display: flex; flex-direction: column; gap: 10px;
+        }
+        .msg { max-width: 75%; padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; position: relative; }
+        .msg-in { background: #e9e9eb; align-self: flex-start; color: #000; }
+        .msg-out { background: #007bff; color: white; align-self: flex-end; }
+
+        .input-bar { padding: 15px; display: flex; gap: 10px; border-top: 1px solid #f0f0f0; background: #fff; }
+        #messageInput { flex: 1; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; outline: none; background: #f8f9fa; }
+        .send-btn { background: #007bff; color: white; border: none; width: 42px; height: 42px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+
+        #auth-overlay {
+            position: fixed; inset: 0; background: #f0f2f5; 
+            display: flex; align-items: center; justify-content: center; z-index: 999;
+        }
+        .auth-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 300px; text-align: center; }
+        .auth-card h3 { margin-top: 0; color: #1c1e21; }
+        .auth-card input { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; outline: none; }
+        .auth-card button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; }
+
+        .hidden { display: none !important; }
+    </style>
 </head>
 <body>
 
-<div class="form-container">
-  <h3>Отправить заявку</h3>
-  <form id="feedbackForm">
-    <input type="text" id="userName" placeholder="Ваше имя" required>
-    <input type="email" id="userEmail" placeholder="Ваш Email" required>
-    <button type="submit">Отправить в облако</button>
-  </form>
+<div id="auth-overlay">
+    <div class="auth-card">
+        <h3>Вход в систему</h3>
+        <input type="text" id="loginName" placeholder="Имя и Фамилия">
+        <button id="loginBtn">Войти</button>
+    </div>
+</div>
+
+<div class="header-profile">
+    <div class="my-avatar" id="myAvatar">?</div>
+    <div class="my-info">
+        <b id="myNameDisplay">Пользователь</b>
+        <button class="logout" onclick="location.reload()">Выйти</button>
+    </div>
+</div>
+
+<div class="chat-card">
+    <div class="contacts-box">
+        <div class="contacts-label">Выберите собеседника:</div>
+        <div class="contacts-list" id="usersContainer"></div>
+    </div>
+
+    <div class="chat-header" id="chatPartnerName">Чат с: ...</div>
+    
+    <div class="messages-area" id="messagesList"></div>
+
+    <div class="input-bar">
+        <input type="text" id="messageInput" placeholder="Ваше сообщение...">
+        <button class="send-btn" id="sendMsgBtn">➤</button>
+    </div>
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, setDoc, doc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAStBnaOno65FDYYlpaBktPpwDNRWZia9s",
-  authDomain: "arturpo-2fa11.firebaseapp.com",
-  projectId: "arturpo-2fa11",
-  storageBucket: "arturpo-2fa11.firebasestorage.app",
-  messagingSenderId: "771872916881",
-  appId: "1:771872916881:web:c2b0540168ba1894138630"
-};
+    const firebaseConfig = {
+        apiKey: "AIzaSyAStBnaOno65FDYYlpaBktPpwDNRWZia9s",
+        authDomain: "arturpo-2fa11.firebaseapp.com",
+        projectId: "arturpo-2fa11",
+        storageBucket: "arturpo-2fa11.firebasestorage.app",
+        messagingSenderId: "771872916881",
+        appId: "1:771872916881:web:c2b0540168ba1894138630"
+    };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-document.getElementById("feedbackForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
+    let me = null;
+    let targetId = null;
+    let unsubChat = null;
 
-  const name = document.getElementById("userName").value;
-  const email = document.getElementById("userEmail").value;
+    document.getElementById('loginBtn').onclick = async () => {
+        const name = document.getElementById('loginName').value.trim();
+        if(!name) return;
 
-  try {
-    await addDoc(collection(db, "requests"), {
-      name: name,
-      email: email,
-      timestamp: new Date()
-    });
+        const userId = name.toLowerCase().replace(/\s+/g, '_');
+        me = { id: userId, name: name };
 
-    alert("Готово! Данные сохранены.");
-    document.getElementById("feedbackForm").reset();
-  } catch (error) {
-    console.error("Ошибка:", error);
-    alert("Ошибка при отправке.");
-  }
-});
+        await setDoc(doc(db, "chat_users", userId), { name: name, lastLogin: serverTimestamp() });
+
+        document.getElementById('auth-overlay').classList.add('hidden');
+        document.getElementById('myNameDisplay').innerText = name;
+        document.getElementById('myAvatar').innerText = name[0].toUpperCase();
+
+        onSnapshot(collection(db, "chat_users"), (snapshot) => {
+            const container = document.getElementById('usersContainer');
+            container.innerHTML = '';
+            snapshot.forEach(docSnap => {
+                const user = docSnap.data();
+                if(docSnap.id === me.id) return;
+
+                const el = document.createElement('div');
+                el.className = 'user-item';
+                el.innerHTML = `<div class="user-avatar">${user.name[0].toUpperCase()}</div><span>${user.name.split(' ')[0]}</span>`;
+                el.onclick = () => {
+                    targetId = docSnap.id;
+                    document.getElementById('chatPartnerName').innerText = "Чат с: " + user.name;
+                    loadMessages();
+                };
+                container.appendChild(el);
+            });
+        });
+    };
+
+    function loadMessages() {
+        if(unsubChat) unsubChat();
+        const q = query(collection(db, "messages"), orderBy("time", "asc"));
+        unsubChat = onSnapshot(q, (snapshot) => {
+            const list = document.getElementById('messagesList');
+            list.innerHTML = '';
+            snapshot.forEach(d => {
+                const m = d.data();
+                if((m.from === me.id && m.to === targetId) || (m.from === targetId && m.to === me.id)) {
+                    const div = document.createElement('div');
+                    div.className = `msg ${m.from === me.id ? 'msg-out' : 'msg-in'}`;
+                    div.innerText = m.text;
+                    list.appendChild(div);
+                }
+            });
+            list.scrollTop = list.scrollHeight;
+        });
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('messageInput');
+        if(!input.value.trim() || !targetId) return;
+
+        await addDoc(collection(db, "messages"), {
+            text: input.value,
+            from: me.id,
+            to: targetId,
+            time: serverTimestamp()
+        });
+        input.value = '';
+    }
+
+    document.getElementById('sendMsgBtn').onclick = sendMessage;
+    document.getElementById('messageInput').onkeypress = (e) => { if(e.key === 'Enter') sendMessage(); };
 </script>
 
 </body>
