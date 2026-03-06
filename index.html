@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Chat App</title>
+    <title>Cloud Chat</title>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: #f0f2f5;
             display: flex;
             flex-direction: column;
@@ -15,76 +15,76 @@
             margin: 0;
         }
 
-        .header-profile {
+        .header-user {
             background: white;
             width: 100%;
-            max-width: 450px;
+            max-width: 500px;
             padding: 15px;
-            border-radius: 12px;
+            border-radius: 15px;
             display: flex;
             align-items: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             margin-bottom: 20px;
             box-sizing: border-box;
         }
-        .my-avatar {
-            width: 45px; height: 45px; border-radius: 50%;
-            background: #7cb342; color: white;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: bold; margin-right: 12px; font-size: 20px;
-            background-size: cover;
-            background-position: center;
-        }
-        .my-info b { display: block; font-size: 15px; margin-bottom: 2px; }
-        .logout { color: #d32f2f; font-size: 12px; cursor: pointer; border: none; background: none; padding: 0; font-weight: bold; }
 
-        .chat-card {
+        .my-avatar {
+            width: 50px; height: 50px; border-radius: 50%;
+            background-size: cover; background-position: center;
+            background-color: #7cb342; margin-right: 15px;
+        }
+
+        .user-info b { display: block; font-size: 16px; color: #333; }
+        .logout-link { color: red; font-size: 12px; cursor: pointer; border: none; background: none; padding: 0; margin-top: 4px; }
+
+        .chat-main {
             background: white;
             width: 100%;
-            max-width: 450px;
+            max-width: 500px;
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             display: flex;
             flex-direction: column;
-            min-height: 550px;
             overflow: hidden;
         }
 
-        .contacts-box { padding: 15px; border-bottom: 1px solid #f0f0f0; }
-        .contacts-label { font-size: 13px; color: #666; margin-bottom: 12px; }
-        .contacts-list { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 5px; }
-        .user-item { text-align: center; cursor: pointer; min-width: 55px; }
-        .user-avatar { 
-            width: 45px; height: 45px; border-radius: 50%; background: #00acc1; 
-            color: white; display: flex; align-items: center; justify-content: center; 
-            margin: 0 auto 6px; font-size: 18px; background-size: cover;
+        .contacts-section { padding: 15px; border-bottom: 1px solid #eee; }
+        .contacts-label { font-size: 14px; color: #666; margin-bottom: 10px; }
+        .contacts-list { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 5px; }
+        .contact-item { text-align: center; cursor: pointer; min-width: 60px; }
+        .contact-avatar { 
+            width: 50px; height: 50px; border-radius: 50%; 
+            background-color: #00acc1; background-size: cover; 
+            margin: 0 auto 5px; border: 2px solid transparent;
         }
-        .user-item span { font-size: 11px; color: #333; }
+        .contact-item span { font-size: 12px; color: #333; }
 
-        .chat-header { padding: 12px 15px; font-weight: bold; font-size: 14px; border-bottom: 1px solid #f0f0f0; background: #fff; }
-        .messages-area {
-            flex: 1; height: 350px; overflow-y: auto; padding: 15px;
+        .chat-title { padding: 12px 15px; font-weight: bold; border-bottom: 1px solid #eee; font-size: 14px; }
+        
+        .messages-display {
+            height: 350px; padding: 20px; overflow-y: auto;
             background: #ffffff; display: flex; flex-direction: column; gap: 10px;
         }
-        .msg { max-width: 75%; padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; }
-        .msg-in { background: #e9e9eb; align-self: flex-start; color: #000; }
-        .msg-out { background: #007bff; color: white; align-self: flex-end; }
 
-        .input-bar { padding: 15px; display: flex; gap: 10px; border-top: 1px solid #f0f0f0; background: #fff; }
-        #messageInput { flex: 1; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; outline: none; background: #f8f9fa; }
-        .send-btn { background: #007bff; color: white; border: none; width: 42px; height: 42px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .bubble { max-width: 70%; padding: 10px 15px; border-radius: 18px; font-size: 14px; line-height: 1.4; }
+        .bubble-in { background: #e9e9eb; align-self: flex-start; color: black; }
+        .bubble-out { background: #007bff; color: white; align-self: flex-end; }
+
+        .input-container { padding: 15px; display: flex; gap: 10px; border-top: 1px solid #eee; }
+        #msgInput { flex: 1; padding: 10px 15px; border: 1px solid #ddd; border-radius: 8px; outline: none; }
+        .btn-send { background: #007bff; color: white; border: none; width: 45px; height: 40px; border-radius: 8px; cursor: pointer; font-size: 18px; }
 
         #auth-overlay {
             position: fixed; inset: 0; background: #f0f2f5; 
-            display: flex; align-items: center; justify-content: center; z-index: 999;
+            display: flex; align-items: center; justify-content: center; z-index: 1000;
         }
-        .auth-card { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 320px; text-align: center; }
-        .google-btn { 
+        .auth-box { background: white; padding: 40px; border-radius: 15px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 320px; }
+        .google-login { 
             display: flex; align-items: center; justify-content: center; gap: 10px;
-            width: 100%; padding: 12px; background: white; color: #444; border: 1px solid #ddd; 
-            border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s;
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;
+            background: white; cursor: pointer; font-weight: bold; transition: 0.2s;
         }
-        .google-btn:hover { background: #f8f9fa; border-color: #bbb; }
+        .google-login:hover { background: #f8f9fa; }
 
         .hidden { display: none !important; }
     </style>
@@ -92,37 +92,37 @@
 <body>
 
 <div id="auth-overlay">
-    <div class="auth-card">
-        <h3>Добро пожаловать</h3>
-        <p style="color: #666; font-size: 14px; margin-bottom: 20px;">Войдите, чтобы начать общение</p>
-        <button class="google-btn" id="loginBtn">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
+    <div class="auth-box">
+        <h3>Вход в чат</h3>
+        <p style="font-size: 14px; color: #666; margin-bottom: 25px;">Используйте Google для авторизации</p>
+        <button class="google-login" id="btnGoogle">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18">
             Войти через Google
         </button>
     </div>
 </div>
 
-<div class="header-profile">
-    <div class="my-avatar" id="myAvatar"></div>
-    <div class="my-info">
-        <b id="myNameDisplay">Загрузка...</b>
-        <button class="logout" id="logoutBtn">Выйти</button>
+<div class="header-user">
+    <div id="myPhoto" class="my-avatar"></div>
+    <div class="user-info">
+        <b id="myName">Загрузка...</b>
+        <button class="logout-link" id="btnLogout">Выйти</button>
     </div>
 </div>
 
-<div class="chat-card">
-    <div class="contacts-box">
+<div class="chat-main">
+    <div class="contacts-section">
         <div class="contacts-label">Выберите собеседника:</div>
-        <div class="contacts-list" id="usersContainer"></div>
+        <div class="contacts-list" id="contactsContainer"></div>
     </div>
 
-    <div class="chat-header" id="chatPartnerName">Чат не выбран</div>
+    <div class="chat-title" id="chatHeader">Чат с: (выберите пользователя)</div>
     
-    <div class="messages-area" id="messagesList"></div>
+    <div class="messages-display" id="messagesBox"></div>
 
-    <div class="input-bar">
-        <input type="text" id="messageInput" placeholder="Ваше сообщение...">
-        <button class="send-btn" id="sendMsgBtn">➤</button>
+    <div class="input-container">
+        <input type="text" id="msgInput" placeholder="Ваше сообщение...">
+        <button class="btn-send" id="btnSend">➤</button>
     </div>
 </div>
 
@@ -132,12 +132,13 @@
     import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
     const firebaseConfig = {
-        apiKey: "AIzaSyAStBnaOno65FDYYlpaBktPpwDNRWZia9s",
-        authDomain: "arturpo-2fa11.firebaseapp.com",
-        projectId: "arturpo-2fa11",
-        storageBucket: "arturpo-2fa11.firebasestorage.app",
-        messagingSenderId: "771872916881",
-        appId: "1:771872916881:web:c2b0540168ba1894138630"
+        apiKey: "AIzaSyCI8upSAwS08ttYU0dFmFTs3FK_A5y8LUo",
+        authDomain: "artur0403.firebaseapp.com",
+        projectId: "artur0403",
+        storageBucket: "artur0403.firebasestorage.app",
+        messagingSenderId: "714886468142",
+        appId: "1:714886468142:web:60069dbddd59f615bc85bf",
+        measurementId: "G-TWX51ENL1E"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -145,89 +146,84 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
-    let currentUser = null;
-    let targetId = null;
-    let unsubChat = null;
+    let userMe = null;
+    let userTargetId = null;
+    let chatSubscription = null;
 
-    document.getElementById('loginBtn').onclick = () => {
-        signInWithPopup(auth, provider).catch(err => console.error(err));
-    };
-
-    document.getElementById('logoutBtn').onclick = () => {
-        signOut(auth).then(() => location.reload());
-    };
+    document.getElementById('btnGoogle').onclick = () => signInWithPopup(auth, provider);
+    document.getElementById('btnLogout').onclick = () => signOut(auth).then(() => location.reload());
 
     onAuthStateChanged(auth, async (user) => {
         if (user) {
-            currentUser = user;
+            userMe = user;
             document.getElementById('auth-overlay').classList.add('hidden');
-            document.getElementById('myNameDisplay').innerText = user.displayName;
-            document.getElementById('myAvatar').style.backgroundImage = `url(${user.photoURL})`;
+            document.getElementById('myName').innerText = user.displayName;
+            document.getElementById('myPhoto').style.backgroundImage = `url(${user.photoURL})`;
 
             await setDoc(doc(db, "chat_users", user.uid), {
                 name: user.displayName,
                 photo: user.photoURL,
-                lastLogin: serverTimestamp()
+                online: true
             });
 
-            onSnapshot(collection(db, "chat_users"), (snapshot) => {
-                const container = document.getElementById('usersContainer');
+            onSnapshot(collection(db, "chat_users"), (snap) => {
+                const container = document.getElementById('contactsContainer');
                 container.innerHTML = '';
-                snapshot.forEach(docSnap => {
-                    const userData = docSnap.data();
-                    if(docSnap.id === user.uid) return;
+                snap.forEach(userDoc => {
+                    const data = userDoc.data();
+                    if (userDoc.id === user.uid) return;
 
-                    const el = document.createElement('div');
-                    el.className = 'user-item';
-                    el.innerHTML = `
-                        <div class="user-avatar" style="background-image: url(${userData.photo})"></div>
-                        <span>${userData.name.split(' ')[0]}</span>
+                    const item = document.createElement('div');
+                    item.className = 'contact-item';
+                    item.innerHTML = `
+                        <div class="contact-avatar" style="background-image: url(${data.photo})"></div>
+                        <span>${data.name.split(' ')[0]}</span>
                     `;
-                    el.onclick = () => {
-                        targetId = docSnap.id;
-                        document.getElementById('chatPartnerName').innerText = "Чат с: " + userData.name;
-                        loadMessages();
+                    item.onclick = () => {
+                        userTargetId = userDoc.id;
+                        document.getElementById('chatHeader').innerText = "Чат с: " + data.name;
+                        syncMessages();
                     };
-                    container.appendChild(el);
+                    container.appendChild(item);
                 });
             });
         }
     });
 
-    function loadMessages() {
-        if(unsubChat) unsubChat();
+    function syncMessages() {
+        if (chatSubscription) chatSubscription();
         const q = query(collection(db, "messages"), orderBy("time", "asc"));
-        unsubChat = onSnapshot(q, (snapshot) => {
-            const list = document.getElementById('messagesList');
-            list.innerHTML = '';
-            snapshot.forEach(d => {
-                const m = d.data();
-                if((m.from === currentUser.uid && m.to === targetId) || (m.from === targetId && m.to === currentUser.uid)) {
+        chatSubscription = onSnapshot(q, (snap) => {
+            const box = document.getElementById('messagesBox');
+            box.innerHTML = '';
+            snap.forEach(mDoc => {
+                const m = mDoc.data();
+                if ((m.from === userMe.uid && m.to === userTargetId) || (m.from === userTargetId && m.to === userMe.uid)) {
                     const div = document.createElement('div');
-                    div.className = `msg ${m.from === currentUser.uid ? 'msg-out' : 'msg-in'}`;
+                    div.className = `bubble ${m.from === userMe.uid ? 'bubble-out' : 'bubble-in'}`;
                     div.innerText = m.text;
-                    list.appendChild(div);
+                    box.appendChild(div);
                 }
             });
-            list.scrollTop = list.scrollHeight;
+            box.scrollTop = box.scrollHeight;
         });
     }
 
-    async function sendMessage() {
-        const input = document.getElementById('messageInput');
-        if(!input.value.trim() || !targetId) return;
+    async function pushMessage() {
+        const input = document.getElementById('msgInput');
+        if (!input.value.trim() || !userTargetId) return;
 
         await addDoc(collection(db, "messages"), {
             text: input.value,
-            from: currentUser.uid,
-            to: targetId,
+            from: userMe.uid,
+            to: userTargetId,
             time: serverTimestamp()
         });
         input.value = '';
     }
 
-    document.getElementById('sendMsgBtn').onclick = sendMessage;
-    document.getElementById('messageInput').onkeypress = (e) => { if(e.key === 'Enter') sendMessage(); };
+    document.getElementById('btnSend').onclick = pushMessage;
+    document.getElementById('msgInput').onkeypress = (e) => { if (e.key === 'Enter') pushMessage(); };
 </script>
 
 </body>
